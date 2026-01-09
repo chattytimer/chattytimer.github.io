@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Schedule Timer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a0a0f 0%, #4a0e1f 100%);
+            color: #f5e6e8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 30px;
+            padding: 60px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            max-width: 90%;
+        }
+
+        .current-time {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+
+        .period-name {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .status {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            color: #ffd700;
+            font-weight: 500;
+        }
+
+        .timer-display {
+            font-size: 8rem;
+            font-weight: bold;
+            margin: 40px 0;
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
+            letter-spacing: 10px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .time-label {
+            font-size: 1.5rem;
+            margin-top: 20px;
+            opacity: 0.9;
+        }
+
+        .schedule-info {
+            margin-top: 40px;
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+
+        .next-period {
+            margin-top: 20px;
+            font-size: 1.3rem;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .fullscreen-btn {
+            margin-top: 30px;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid white;
+            border-radius: 15px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .fullscreen-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .minimize-btn {
+            margin-top: 30px;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid white;
+            border-radius: 15px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .minimize-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .popup-mode {
+            padding: 15px;
+            max-width: 100%;
+        }
+
+        .popup-mode .timer-display {
+            font-size: 4rem;
+            margin: 20px 0;
+        }
+
+        .popup-mode .period-name {
+            font-size: 1.5rem;
+        }
+
+        .popup-mode .status {
+            font-size: 1.1rem;
+        }
+
+        .popup-mode .time-label {
+            font-size: 1rem;
+        }
+
+        .popup-mode .current-time {
+            font-size: 1.1rem;
+        }
+
+        .popup-mode .next-period,
+        .popup-mode .fullscreen-btn,
+        .popup-mode .minimize-btn {
+            display: none;
+        }
+
+        .popup-mode .tabs {
+            margin: 10px 0;
+        }
+
+        .popup-mode .tab-btn {
+            padding: 8px 20px;
+            font-size: 0.9rem;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .tab-btn {
+            padding: 12px 30px;
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            color: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .tab-btn.active {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: white;
+            color: white;
+        }
+
+        .passing {
+            animation: passingPulse 2s ease-in-out infinite;
+        }
+
+        .packing {
+            animation: packingBlink 1s ease-in-out infinite;
+            color: #ffaa00;
+        }
+
+        .ending {
+            animation: endingBlink 0.5s ease-in-out infinite;
+            color: #ff4444;
+        }
+
+        @keyframes passingPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        @keyframes packingBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        @keyframes endingBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .container:fullscreen,
+        .container:-webkit-full-screen {
+            width: 100vw;
+            height: 100vh;
+            max-width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .container:fullscreen .timer-display,
+        .container:-webkit-full-screen .timer-display {
+            font-size: 12rem;
+        }
+
+        .container:fullscreen .fullscreen-btn,
+        .container:-webkit-full-screen .fullscreen-btn,
+        .container:fullscreen .minimize-btn,
+        .container:-webkit-full-screen .minimize-btn {
+            display: none;
+        }
+
+        .settings-container {
+            position: relative;
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .settings-btn,
+        .themes-btn {
+            padding: 15px 40px;
+            font-size: 1.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid white;
+            border-radius: 15px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .settings-btn:hover,
+        .themes-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .settings-menu {
+            display: none;
+            position: absolute;
+            bottom: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(20, 20, 40, 0.95);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            min-width: 300px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .settings-menu.show,
+        .themes-menu.show {
+            display: block;
+        }
+
+        .themes-menu {
+            display: none;
+            position: absolute;
+            bottom: 70px;
+            right: 0;
+            background: rgba(20, 20, 40, 0.95);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            min-width: 250px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .settings-menu h3 {
+            margin: 0 0 15px 0;
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding-bottom: 10px;
+        }
+
+        .settings-section {
+            margin-bottom: 15px;
+        }
+
+        .settings-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .settings-section label {
+            display: block;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 8px;
+        }
+
+        .settings-menu .tab-btn,
+        .settings-menu .fullscreen-btn,
+        .settings-menu .minimize-btn,
+        .themes-menu .theme-option {
+            width: 100%;
+            margin: 5px 0;
+            padding: 12px;
+            font-size: 1rem;
+        }
+
+        .theme-option {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            color: rgba(255, 255, 255, 0.8);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .theme-option:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .theme-option.active {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: white;
+            color: white;
+        }
+
+        .period-editor {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .period-input-group {
+            margin: 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .period-input-group label {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+            min-width: 80px;
+        }
+
+        .period-input-group input {
+            flex: 1;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 5px;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .period-input-group input:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .export-import-section {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .export-import-section button {
+            width: 100%;
+            margin: 5px 0;
+            padding: 10px;
+            background: rgba(100, 150, 255, 0.2);
+            border: 1px solid rgba(100, 150, 255, 0.5);
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .export-import-section button:hover {
+            background: rgba(100, 150, 255, 0.3);
+        }
+
+        .popup-mode .settings-container {
+            display: none;
+        }
+
+        .container:fullscreen .settings-container,
+        .container:-webkit-full-screen .settings-container {
+            display: none;
+        }
+
+        /* Theme: Math */
+        body.theme-math {
+            background: linear-gradient(135deg, #0a1929 0%, #1e3a5f 100%);
+            color: #e3f2fd;
+        }
+
+        body.theme-math .container {
+            background: rgba(15, 25, 40, 0.9);
+            border: 2px solid #42a5f5;
+            box-shadow: 0 20px 60px rgba(33, 150, 243, 0.4);
+        }
+
+        body.theme-math .status {
+            color: #90caf9;
+        }
+
+        /* Theme: Science */
+        body.theme-science {
+            background: linear-gradient(135deg, #0a1a0a 0%, #1a3a1a 100%);
+            color: #00ff88;
+        }
+
+        body.theme-science .container {
+            background: rgba(10, 10, 30, 0.9);
+            border: 2px solid #00ff88;
+            box-shadow: 0 20px 60px rgba(0, 255, 136, 0.3);
+        }
+
+        body.theme-science .status {
+            color: #00ddff;
+        }
+
+        /* Theme: Reading */
+        body.theme-reading {
+            background: linear-gradient(135deg, #2c1810 0%, #5a3825 100%);
+            color: #f4e4d7;
+        }
+
+        body.theme-reading .container {
+            background: rgba(40, 25, 15, 0.9);
+            border: 2px solid #d4a574;
+            box-shadow: 0 20px 60px rgba(180, 140, 90, 0.4);
+        }
+
+        body.theme-reading .status {
+            color: #ffb74d;
+        }
+
+        /* Theme: History */
+        body.theme-history {
+            background: linear-gradient(135deg, #2c2416 0%, #4a3f2a 100%);
+            color: #e8dcc4;
+        }
+
+        body.theme-history .container {
+            background: rgba(35, 30, 20, 0.9);
+            border: 2px solid #b8964f;
+            box-shadow: 0 20px 60px rgba(139, 115, 60, 0.4);
+        }
+
+        body.theme-history .status {
+            color: #d4af37;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+            }
+            .timer-display {
+                font-size: 4rem;
+            }
+            .period-name {
+                font-size: 1.8rem;
+            }
+            .status {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="container">
+        <div class="current-time" id="currentTime"></div>
+        <div class="period-name" id="periodName">Loading...</div>
+        <div class="status" id="status"></div>
+        <div class="timer-display" id="timerDisplay">00:00</div>
+        <div class="time-label" id="timeLabel"></div>
+        <div class="next-period" id="nextPeriod"></div>
+        
+        <div class="settings-container">
+            <button class="settings-btn" onclick="toggleSettings()">⚙️ Settings</button>
+            <button class="themes-btn" onclick="toggleThemes()">🎨 Themes</button>
+            
+            <div class="settings-menu" id="settingsMenu">
+                <h3>Timer Settings</h3>
+                
+                <div class="settings-section">
+                    <label>Timer Mode:</label>
+                    <button class="tab-btn active" id="packUpTab" onclick="setTimerMode('packUp')">Time to Pack Up</button>
+                    <button class="tab-btn" id="classEndTab" onclick="setTimerMode('classEnd')">Time to Class End</button>
+                </div>
+                
+                <div class="settings-section">
+                    <label>Display Options:</label>
+                    <button class="fullscreen-btn" onclick="toggleFullscreen()">⛶ Fullscreen</button>
+                    <button class="minimize-btn" id="minimizeBtn" onclick="toggleMinimize()">❐ Pop-Out</button>
+                    <button class="tab-btn" onclick="openPeriodEditor()">✏️ Edit Period Names</button>
+                </div>
+            </div>
+            
+            <div class="themes-menu" id="themesMenu">
+                <h3>Choose Theme</h3>
+                <button class="theme-option active" data-theme="standard" onclick="setTheme('standard')">Burgundy</button>
+                <button class="theme-option" data-theme="math" onclick="setTheme('math')">Blue</button>
+                <button class="theme-option" data-theme="science" onclick="setTheme('science')">Green</button>
+                <button class="theme-option" data-theme="reading" onclick="setTheme('reading')">Brown</button>
+                <button class="theme-option" data-theme="history" onclick="setTheme('history')">Gold</button>
+            </div>
+        </div>
+    </div>
+
+    <audio id="alarm"></audio>
+
+    <!-- Period Editor Modal -->
+    <div id="periodEditorModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; justify-content: center; align-items: center;">
+        <div style="background: rgba(30, 30, 50, 0.98); border: 2px solid rgba(255,255,255,0.3); border-radius: 20px; padding: 30px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto;">
+            <h2 style="margin: 0 0 20px 0; color: white;">Edit Period Names</h2>
+            <div id="periodEditorContent" class="period-editor"></div>
+            <div class="export-import-section">
+                <button onclick="exportSchedule()">⬇️ Export Schedule JSON</button>
+                <button onclick="document.getElementById('importFile').click()">⬆️ Import Schedule JSON</button>
+                <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importSchedule(event)">
+                <button onclick="resetSchedule()">♻️ Reset to Default</button>
+            </div>
+            <button onclick="savePeriodNames()" style="width: 100%; margin-top: 15px; padding: 15px; background: rgba(100, 200, 100, 0.3); border: 2px solid rgba(100, 200, 100, 0.6); border-radius: 10px; color: white; cursor: pointer; font-size: 1.1rem; font-weight: bold;">✔️ Save Changes</button>
+            <button onclick="closePeriodEditor()" style="width: 100%; margin-top: 10px; padding: 12px; background: rgba(200, 100, 100, 0.3); border: 2px solid rgba(200, 100, 100, 0.6); border-radius: 10px; color: white; cursor: pointer; font-size: 1rem;">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        // School schedule data
+        const defaultSchedules = {
+            // Monday (0 = Sunday, 1 = Monday)
+            1: [
+                { name: "Period 1", start: "8:05", end: "8:56" },
+                { name: "Period 2", start: "9:01", end: "9:52" },
+                { name: "Period 3", start: "9:57", end: "10:48" },
+                { name: "Advisement", start: "10:53", end: "11:36" },
+                { name: "Period 4", start: "11:41", end: "12:32" },
+                { name: "Period 5", start: "12:37", end: "13:28" },
+                { name: "Period 6", start: "13:33", end: "14:24" },
+                { name: "Period 7", start: "14:29", end: "15:20" }
+            ],
+            // Tuesday
+            2: [
+                { name: "Study Lab", start: "8:05", end: "8:50" },
+                { name: "Period 1", start: "8:55", end: "9:45" },
+                { name: "Period 2", start: "9:50", end: "10:40" },
+                { name: "Period 3", start: "10:45", end: "11:35" },
+                { name: "Period 4", start: "11:45", end: "12:35" },
+                { name: "Period 5", start: "12:40", end: "13:30" },
+                { name: "Period 6", start: "13:35", end: "14:25" },
+                { name: "Period 7", start: "14:30", end: "15:20" }
+            ],
+            // Wednesday
+            3: [
+                { name: "Period 1", start: "8:05", end: "8:56" },
+                { name: "Period 2", start: "9:01", end: "9:52" },
+                { name: "Period 3", start: "9:57", end: "10:48" },
+                { name: "Advisement", start: "10:53", end: "11:36" },
+                { name: "Period 4", start: "11:41", end: "12:32" },
+                { name: "Period 5", start: "12:37", end: "13:28" },
+                { name: "Period 6", start: "13:33", end: "14:24" },
+                { name: "Period 7", start: "14:29", end: "15:20" }
+            ],
+            // Thursday (Late Start)
+            4: [
+                { name: "PLC Time", start: "8:05", end: "8:50" },
+                { name: "Period 1", start: "8:55", end: "9:45" },
+                { name: "Period 2", start: "9:50", end: "10:40" },
+                { name: "Period 3", start: "10:45", end: "11:35" },
+                { name: "Period 4", start: "11:45", end: "12:35" },
+                { name: "Period 5", start: "12:40", end: "13:30" },
+                { name: "Period 6", start: "13:35", end: "14:25" },
+                { name: "Period 7", start: "14:30", end: "15:20" }
+            ],
+            // Friday
+            5: [
+                { name: "Period 1", start: "8:05", end: "8:56" },
+                { name: "Period 2", start: "9:01", end: "9:52" },
+                { name: "Period 3", start: "9:57", end: "10:48" },
+                { name: "Advisement", start: "10:53", end: "11:36" },
+                { name: "Period 4", start: "11:41", end: "12:32" },
+                { name: "Period 5", start: "12:37", end: "13:28" },
+                { name: "Period 6", start: "13:33", end: "14:24" },
+                { name: "Period 7", start: "14:29", end: "15:20" }
+            ]
+        };
+
+        // Load custom period names from localStorage
+        let schedules = JSON.parse(localStorage.getItem('customSchedules')) || JSON.parse(JSON.stringify(defaultSchedules));
+
+        let alarmPlayed = false;
+        let audioContext = null;
+        let timerMode = 'packUp'; // 'packUp' or 'classEnd'
+        let popupWindow = null;
+        let isPopupMode = false;
+        let currentTheme = localStorage.getItem('timerTheme') || 'standard';
+
+        // Check if this is a popup window
+        if (window.opener && window.location.search.includes('popup=true')) {
+            isPopupMode = true;
+            document.getElementById('container').classList.add('popup-mode');
+        }
+
+        // Apply saved theme
+        if (currentTheme !== 'standard') {
+            document.body.classList.add('theme-' + currentTheme);
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeButtons = document.querySelectorAll('.theme-option');
+            themeButtons.forEach(btn => {
+                if (btn.dataset.theme === currentTheme) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        });
+
+        function parseTime(timeStr) {
+            const [hours, minutes] = timeStr.split(':').map(Number);
+            const date = new Date();
+            date.setHours(hours, minutes, 0, 0);
+            return date;
+        }
+
+        function formatTime(date) {
+            const hours = date.getHours();
+            const minutes = date.getMinutes();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            const displayHours = hours % 12 || 12;
+            return `${displayHours}:${String(minutes).padStart(2, '0')} ${ampm}`;
+        }
+
+        function formatCountdown(ms) {
+            const totalSeconds = Math.floor(ms / 1000);
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        function format12Hour(timeStr) {
+            const [hours, minutes] = timeStr.split(':').map(Number);
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            const displayHours = hours % 12 || 12;
+            return `${displayHours}:${String(minutes).padStart(2, '0')} ${ampm}`;
+        }
+
+        function getDayName(dayNum) {
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            return days[dayNum];
+        }
+
+        function playAlarm() {
+            if (alarmPlayed) return;
+            alarmPlayed = true;
+
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const now = audioContext.currentTime;
+
+            function playTone(frequency, startTime, duration) {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(frequency, startTime);
+
+                gainNode.gain.setValueAtTime(0, startTime);
+                gainNode.gain.linearRampToValueAtTime(0.15, startTime + 0.05);
+                gainNode.gain.linearRampToValueAtTime(0.15, startTime + duration - 0.05);
+                gainNode.gain.linearRampToValueAtTime(0, startTime + duration);
+
+                oscillator.start(startTime);
+                oscillator.stop(startTime + duration);
+            }
+
+            // Pleasant chime
+            const frequencies = [523.25, 659.25, 783.99]; // C5, E5, G5
+            let time = now;
+
+            for (let i = 0; i < frequencies.length; i++) {
+                playTone(frequencies[i], time, 0.3);
+                time += 0.2;
+            }
+        }
+
+        function updateTimer() {
+            const now = new Date();
+            const dayOfWeek = now.getDay();
+
+            // Update current time display
+            document.getElementById('currentTime').textContent = 
+                `${getDayName(dayOfWeek)} - ${formatTime(now)}`;
+
+            // Check if it's a school day
+            if (dayOfWeek === 0 || dayOfWeek === 6) {
+                document.getElementById('periodName').textContent = 'WEEKEND';
+                document.getElementById('status').textContent = 'No School';
+                document.getElementById('timerDisplay').textContent = '😎';
+                document.getElementById('timeLabel').textContent = 'Enjoy your weekend!';
+                document.getElementById('nextPeriod').textContent = '';
+                return;
+            }
+
+            const todaySchedule = schedules[dayOfWeek];
+            if (!todaySchedule) {
+                document.getElementById('periodName').textContent = 'NO SCHEDULE';
+                document.getElementById('status').textContent = 'Schedule not available';
+                document.getElementById('timerDisplay').textContent = '--:--';
+                return;
+            }
+
+            const currentTime = now.getTime();
+
+            // Find current or next period
+            let currentPeriod = null;
+            let nextPeriod = null;
+            let inPassing = false;
+
+            for (let i = 0; i < todaySchedule.length; i++) {
+                const period = todaySchedule[i];
+                const startTime = parseTime(period.start).getTime();
+                const endTime = parseTime(period.end).getTime();
+
+                if (currentTime >= startTime && currentTime < endTime) {
+                    // We're in this period
+                    currentPeriod = period;
+                    nextPeriod = todaySchedule[i + 1] || null;
+                    break;
+                } else if (currentTime < startTime) {
+                    // This is the next period
+                    nextPeriod = period;
+                    if (i > 0) {
+                        const prevPeriod = todaySchedule[i - 1];
+                        const prevEndTime = parseTime(prevPeriod.end).getTime();
+                        if (currentTime >= prevEndTime) {
+                            inPassing = true;
+                        }
+                    } else if (currentTime < startTime) {
+                        inPassing = true;
+                    }
+                    break;
+                }
+            }
+
+            // Determine state and display
+            if (currentPeriod) {
+                // We're in a class
+                const endTime = parseTime(currentPeriod.end).getTime();
+                const packUpTime = endTime - (2 * 60 * 1000); // 2 minutes before end
+                const msRemaining = endTime - currentTime;
+                const msToPackUp = packUpTime - currentTime;
+
+                document.getElementById('periodName').textContent = currentPeriod.name;
+                document.getElementById('periodName').className = 'period-name';
+
+                // Determine which countdown to show based on mode
+                if (timerMode === 'packUp') {
+                    // Pack-up mode: show countdown to pack-up time
+                    if (currentTime < packUpTime) {
+                        document.getElementById('status').textContent = 'CLASS IN PROGRESS';
+                        document.getElementById('timerDisplay').textContent = formatCountdown(msToPackUp);
+                        document.getElementById('timerDisplay').className = 'timer-display';
+                        document.getElementById('timeLabel').textContent = '⏰ Time Until Pack-Up Begins (2 min before end)';
+                        alarmPlayed = false;
+                    } else {
+                        document.getElementById('status').textContent = '🎒 PACK UP NOW!';
+                        document.getElementById('status').className = 'status packing';
+                        document.getElementById('timerDisplay').textContent = formatCountdown(msRemaining);
+                        document.getElementById('timerDisplay').className = 'timer-display ending';
+                        document.getElementById('timeLabel').textContent = 'Final 2 Minutes - Class Ends In';
+
+                        if (msToPackUp > -1000 && msToPackUp < 0) {
+                            playAlarm();
+                        }
+                    }
+                } else {
+                    // Class-end mode: always show countdown to class end
+                    if (currentTime < packUpTime) {
+                        document.getElementById('status').textContent = 'CLASS IN PROGRESS';
+                        document.getElementById('timerDisplay').textContent = formatCountdown(msRemaining);
+                        document.getElementById('timerDisplay').className = 'timer-display';
+                        document.getElementById('timeLabel').textContent = '📚 Time Until Class Ends';
+                        alarmPlayed = false;
+                    } else {
+                        document.getElementById('status').textContent = '🎒 PACK UP NOW!';
+                        document.getElementById('status').className = 'status packing';
+                        document.getElementById('timerDisplay').textContent = formatCountdown(msRemaining);
+                        document.getElementById('timerDisplay').className = 'timer-display ending';
+                        document.getElementById('timeLabel').textContent = 'Final 2 Minutes - Class Ends In';
+
+                        if (msToPackUp > -1000 && msToPackUp < 0) {
+                            playAlarm();
+                        }
+                    }
+                }
+
+                if (nextPeriod) {
+                    document.getElementById('nextPeriod').textContent = 
+                        `Next: ${nextPeriod.name} (${format12Hour(nextPeriod.start)} - ${format12Hour(nextPeriod.end)})`;
+                } else {
+                    document.getElementById('nextPeriod').textContent = 'Last period of the day!';
+                }
+
+            } else if (inPassing && nextPeriod) {
+                // We're in passing period
+                const startTime = parseTime(nextPeriod.start).getTime();
+                const msRemaining = startTime - currentTime;
+
+                document.getElementById('periodName').textContent = 'PASSING PERIOD';
+                document.getElementById('periodName').className = 'period-name passing';
+                document.getElementById('status').textContent = 'Get to your next class!';
+                document.getElementById('status').className = 'status';
+                document.getElementById('timerDisplay').textContent = formatCountdown(msRemaining);
+                document.getElementById('timerDisplay').className = 'timer-display';
+                document.getElementById('timeLabel').textContent = `🚶 ${nextPeriod.name} Starts In`;
+                document.getElementById('nextPeriod').textContent = 
+                    `${nextPeriod.name} (${format12Hour(nextPeriod.start)} - ${format12Hour(nextPeriod.end)})`;
+                alarmPlayed = false;
+
+            } else if (nextPeriod && currentTime < parseTime(todaySchedule[0].start).getTime()) {
+                // Before school starts
+                const startTime = parseTime(todaySchedule[0].start).getTime();
+                const msRemaining = startTime - currentTime;
+
+                document.getElementById('periodName').textContent = 'BEFORE SCHOOL';
+                document.getElementById('status').textContent = 'School hasn\'t started yet';
+                document.getElementById('timerDisplay').textContent = formatCountdown(msRemaining);
+                document.getElementById('timeLabel').textContent = `School Starts In`;
+                document.getElementById('nextPeriod').textContent = 
+                    `First: ${todaySchedule[0].name} (${format12Hour(todaySchedule[0].start)})`;
+                alarmPlayed = false;
+
+            } else {
+                // After school
+                document.getElementById('periodName').textContent = 'SCHOOL DAY COMPLETE';
+                document.getElementById('status').textContent = 'Have a great rest of your day!';
+                document.getElementById('timerDisplay').textContent = '✓';
+                document.getElementById('timeLabel').textContent = '';
+                document.getElementById('nextPeriod').textContent = '';
+                alarmPlayed = false;
+            }
+        }
+
+        function toggleFullscreen() {
+            const container = document.getElementById('container');
+
+            if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                if (container.requestFullscreen) {
+                    container.requestFullscreen();
+                } else if (container.webkitRequestFullscreen) {
+                    container.webkitRequestFullscreen();
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                }
+            }
+        }
+
+        function toggleMinimize() {
+            if (popupWindow && !popupWindow.closed) {
+                // Close existing popup
+                popupWindow.close();
+                popupWindow = null;
+                document.getElementById('minimizeBtn').textContent = '\u2750 Pop-Out';
+            } else {
+                // Open new popup window
+                const width = 400;
+                const height = 500;
+                const left = screen.width - width - 20;
+                const top = 20;
+                
+                popupWindow = window.open(
+                    window.location.href + '?popup=true',
+                    'TimerPopup',
+                    `width=${width},height=${height},left=${left},top=${top},toolbar=no,menubar=no,location=no,status=no,resizable=yes,alwaysOnTop=yes`
+                );
+                
+                if (popupWindow) {
+                    document.getElementById('minimizeBtn').textContent = '\u2716 Close Pop-Out';
+                    
+                    // Check if popup is closed
+                    const checkPopup = setInterval(() => {
+                        if (popupWindow && popupWindow.closed) {
+                            popupWindow = null;
+                            document.getElementById('minimizeBtn').textContent = '\u2750 Pop-Out';
+                            clearInterval(checkPopup);
+                        }
+                    }, 1000);
+                }
+            }
+        }
+
+        function setTimerMode(mode) {
+            timerMode = mode;
+            document.getElementById('packUpTab').classList.toggle('active', mode === 'packUp');
+            document.getElementById('classEndTab').classList.toggle('active', mode === 'classEnd');
+            alarmPlayed = false; // Reset alarm when switching modes
+        }
+
+        function toggleSettings() {
+            const menu = document.getElementById('settingsMenu');
+            menu.classList.toggle('show');
+            // Close themes menu if open
+            document.getElementById('themesMenu').classList.remove('show');
+        }
+
+        function toggleThemes() {
+            const menu = document.getElementById('themesMenu');
+            menu.classList.toggle('show');
+            // Close settings menu if open
+            document.getElementById('settingsMenu').classList.remove('show');
+        }
+
+        function setTheme(theme) {
+            // Remove all theme classes
+            document.body.classList.remove('theme-math', 'theme-science', 'theme-reading', 'theme-history');
+            
+            // Add new theme class if not standard
+            if (theme !== 'standard') {
+                document.body.classList.add('theme-' + theme);
+            }
+            
+            // Update active button
+            document.querySelectorAll('.theme-option').forEach(btn => {
+                if (btn.dataset.theme === theme) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            // Save theme preference
+            localStorage.setItem('timerTheme', theme);
+            currentTheme = theme;
+        }
+
+        function openPeriodEditor() {
+            const modal = document.getElementById('periodEditorModal');
+            const content = document.getElementById('periodEditorContent');
+            
+            // Create a list of unique period slots based on Monday's schedule
+            const basePeriods = schedules[1];
+            
+            let html = '<p style="color: rgba(255,255,255,0.7); margin-bottom: 15px; font-size: 0.9rem;">Edit class names for each period. These will apply to all days.</p>';
+            
+            let periodNumber = 1;
+            basePeriods.forEach((period, index) => {
+                // Skip Advisement period (it's fixed)
+                if (period.name === 'Advisement' || period.name.toLowerCase().includes('advisement')) {
+                    html += `
+                        <div class="period-input-group">
+                            <label>${period.name}</label>
+                            <input type="text" 
+                                   value="${period.name}" 
+                                   disabled
+                                   style="opacity: 0.5; cursor: not-allowed;">
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="period-input-group">
+                            <label>Period ${periodNumber}</label>
+                            <input type="text" 
+                                   id="period_${index}" 
+                                   data-index="${index}"
+                                   value="${period.name}" 
+                                   placeholder="Class name">
+                        </div>
+                    `;
+                    periodNumber++;
+                }
+            });
+            
+            content.innerHTML = html;
+            modal.style.display = 'flex';
+            document.getElementById('settingsMenu').classList.remove('show');
+        }
+
+        function closePeriodEditor() {
+            document.getElementById('periodEditorModal').style.display = 'none';
+        }
+
+        function savePeriodNames() {
+            const days = [1, 2, 3, 4, 5];
+            const basePeriods = schedules[1];
+            
+            // Get the new names from inputs
+            basePeriods.forEach((period, index) => {
+                const input = document.getElementById(`period_${index}`);
+                if (input && !input.disabled) {
+                    const newName = input.value || period.name;
+                    
+                    // Apply to all days at this index
+                    days.forEach(dayNum => {
+                        if (schedules[dayNum][index]) {
+                            schedules[dayNum][index].name = newName;
+                        }
+                    });
+                }
+            });
+            
+            // Save to localStorage
+            localStorage.setItem('customSchedules', JSON.stringify(schedules));
+            
+            closePeriodEditor();
+            alert('Class names saved successfully!');
+        }
+
+        function exportSchedule() {
+            const dataStr = JSON.stringify({ schedules }, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'schedule.json';
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function importSchedule(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (data.schedules) {
+                        // Convert day names to numbers if needed
+                        const importedSchedules = {};
+                        const dayMapping = {
+                            'monday': 1, 'tuesday': 2, 'wednesday': 3, 'thursday': 4, 'friday': 5,
+                            '1': 1, '2': 2, '3': 3, '4': 4, '5': 5
+                        };
+                        
+                        for (let key in data.schedules) {
+                            const dayNum = dayMapping[key.toLowerCase()] || parseInt(key);
+                            if (dayNum) {
+                                importedSchedules[dayNum] = data.schedules[key];
+                            }
+                        }
+                        
+                        schedules = importedSchedules;
+                        localStorage.setItem('customSchedules', JSON.stringify(schedules));
+                        alert('Schedule imported successfully!');
+                        closePeriodEditor();
+                    } else {
+                        alert('Invalid schedule file format.');
+                    }
+                } catch (err) {
+                    alert('Error reading schedule file: ' + err.message);
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = ''; // Reset file input
+        }
+
+        function resetSchedule() {
+            if (confirm('Are you sure you want to reset all period names to default?')) {
+                schedules = JSON.parse(JSON.stringify(defaultSchedules));
+                localStorage.setItem('customSchedules', JSON.stringify(schedules));
+                openPeriodEditor(); // Refresh the editor
+                alert('Schedule reset to default!');
+            }
+        }
+
+        // Close menus when clicking outside
+        document.addEventListener('click', (e) => {
+            const settingsMenu = document.getElementById('settingsMenu');
+            const themesMenu = document.getElementById('themesMenu');
+            const settingsBtn = document.querySelector('.settings-btn');
+            const themesBtn = document.querySelector('.themes-btn');
+            
+            if (settingsMenu && settingsBtn && !settingsMenu.contains(e.target) && !settingsBtn.contains(e.target)) {
+                settingsMenu.classList.remove('show');
+            }
+            
+            if (themesMenu && themesBtn && !themesMenu.contains(e.target) && !themesBtn.contains(e.target)) {
+                themesMenu.classList.remove('show');
+            }
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'KeyF') {
+                e.preventDefault();
+                toggleFullscreen();
+            } else if (e.code === 'KeyM') {
+                e.preventDefault();
+                toggleMinimize();
+            } else if (e.code === 'KeyS') {
+                e.preventDefault();
+                toggleSettings();
+            } else if (e.code === 'Digit1') {
+                e.preventDefault();
+                setTimerMode('packUp');
+            } else if (e.code === 'Digit2') {
+                e.preventDefault();
+                setTimerMode('classEnd');
+            }
+        });
+
+        // Update timer every second
+        updateTimer();
+        setInterval(updateTimer, 1000);
+    </script>
+</body>
+</html>
