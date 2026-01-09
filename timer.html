@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>School Schedule Timer</title>
+    <title>Chatty Timer</title>
+    <link rel="icon" type="image/png" href="Images/Logo.png">
     <style>
         * {
             margin: 0;
@@ -167,6 +168,42 @@
             justify-content: center;
             gap: 10px;
             margin: 20px 0;
+        }
+
+        .mode-tabs {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .mode-tab {
+            padding: 12px 30px;
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            color: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .mode-tab:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .mode-tab.active {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: white;
+            color: white;
         }
 
         .tab-btn {
@@ -440,6 +477,38 @@
             color: #90caf9;
         }
 
+        /* Theme: Orange */
+        body.theme-orange {
+            background: linear-gradient(135deg, #2d1a0a 0%, #5a3214 100%);
+            color: #ffe4cc;
+        }
+
+        body.theme-orange .container {
+            background: rgba(40, 25, 10, 0.9);
+            border: 2px solid #ff8c42;
+            box-shadow: 0 20px 60px rgba(255, 140, 66, 0.4);
+        }
+
+        body.theme-orange .status {
+            color: #ffb366;
+        }
+
+        /* Theme: Yellow */
+        body.theme-yellow {
+            background: linear-gradient(135deg, #2d2a0a 0%, #4a4514 100%);
+            color: #fffacc;
+        }
+
+        body.theme-yellow .container {
+            background: rgba(40, 38, 10, 0.9);
+            border: 2px solid #ffd700;
+            box-shadow: 0 20px 60px rgba(255, 215, 0, 0.4);
+        }
+
+        body.theme-yellow .status {
+            color: #ffed4e;
+        }
+
         /* Theme: Science */
         body.theme-science {
             background: linear-gradient(135deg, #0a1a0a 0%, #1a3a1a 100%);
@@ -454,6 +523,38 @@
 
         body.theme-science .status {
             color: #00ddff;
+        }
+
+        /* Theme: Indigo */
+        body.theme-indigo {
+            background: linear-gradient(135deg, #1a0a2d 0%, #2d1a4a 100%);
+            color: #e8d5ff;
+        }
+
+        body.theme-indigo .container {
+            background: rgba(25, 15, 45, 0.9);
+            border: 2px solid #6a5acd;
+            box-shadow: 0 20px 60px rgba(106, 90, 205, 0.4);
+        }
+
+        body.theme-indigo .status {
+            color: #9370db;
+        }
+
+        /* Theme: Violet */
+        body.theme-violet {
+            background: linear-gradient(135deg, #2d0a2d 0%, #4a1a4a 100%);
+            color: #f5d5ff;
+        }
+
+        body.theme-violet .container {
+            background: rgba(40, 15, 40, 0.9);
+            border: 2px solid #9f5fb5;
+            box-shadow: 0 20px 60px rgba(159, 95, 181, 0.4);
+        }
+
+        body.theme-violet .status {
+            color: #da70d6;
         }
 
         /* Theme: Reading */
@@ -488,6 +589,97 @@
             color: #d4af37;
         }
 
+        .custom-timer-controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .timer-input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .timer-input {
+            width: 80px;
+            padding: 15px;
+            font-size: 2rem;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            -moz-appearance: textfield;
+        }
+
+        .timer-input::-webkit-outer-spin-button,
+        .timer-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .timer-input:focus {
+            outline: none;
+            border-color: white;
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .timer-control-btn {
+            padding: 15px 40px;
+            font-size: 1.3rem;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid white;
+            border-radius: 15px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            min-width: 150px;
+        }
+
+        .timer-control-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .timer-control-btn:active {
+            transform: translateY(0);
+        }
+
+        .timer-control-btn.reset {
+            background: rgba(255, 100, 100, 0.2);
+            border-color: rgba(255, 100, 100, 0.8);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .notification {
+            position: fixed;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 200, 100, 0.95);
+            color: #000;
+            padding: 15px 40px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            z-index: 2000;
+            transition: top 0.3s ease-out;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .notification.show {
+            top: 20px;
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 30px 20px;
@@ -505,6 +697,7 @@
     </style>
 </head>
 <body>
+    <div id="notification" class="notification"></div>
     <div class="container" id="container">
         <div class="current-time" id="currentTime"></div>
         <div class="period-name" id="periodName">Loading...</div>
@@ -512,6 +705,25 @@
         <div class="timer-display" id="timerDisplay">00:00</div>
         <div class="time-label" id="timeLabel"></div>
         <div class="next-period" id="nextPeriod"></div>
+        
+        <!-- Custom Timer View -->
+        <div id="customTimerView" class="hidden">
+            <div class="custom-timer-controls">
+                <div class="timer-input-group">
+                    <input type="number" id="hoursInput" class="timer-input" min="0" max="23" value="0" placeholder="00">
+                    <span style="font-size: 2rem; font-weight: bold;">:</span>
+                    <input type="number" id="minutesInput" class="timer-input" min="0" max="59" value="5" placeholder="00">
+                    <span style="font-size: 2rem; font-weight: bold;">:</span>
+                    <input type="number" id="secondsInput" class="timer-input" min="0" max="59" value="0" placeholder="00">
+                </div>
+                <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center;">
+                    <button id="startBtn" class="timer-control-btn" onclick="startCustomTimer()">▶️ Start</button>
+                    <button id="pauseBtn" class="timer-control-btn hidden" onclick="pauseCustomTimer()">⏸️ Pause</button>
+                    <button id="resumeBtn" class="timer-control-btn hidden" onclick="resumeCustomTimer()">▶️ Resume</button>
+                    <button class="timer-control-btn reset" onclick="resetCustomTimer()">🔄 Reset</button>
+                </div>
+            </div>
+        </div>
         
         <div class="settings-container">
             <button class="settings-btn" onclick="toggleSettings()">⚙️ Settings</button>
@@ -521,9 +733,15 @@
                 <h3>Timer Settings</h3>
                 
                 <div class="settings-section">
+                    <label>View:</label>
+                    <button class="tab-btn active" id="scheduleViewTab" onclick="switchMode('schedule')">📅 Schedule</button>
+                    <button class="tab-btn" id="timerViewTab" onclick="switchMode('custom')">⏱️ Timer</button>
+                </div>
+                
+                <div class="settings-section" id="scheduleSettings">
                     <label>Timer Mode:</label>
-                    <button class="tab-btn active" id="packUpTab" onclick="setTimerMode('packUp')">Time to Pack Up</button>
-                    <button class="tab-btn" id="classEndTab" onclick="setTimerMode('classEnd')">Time to Class End</button>
+                    <button class="tab-btn active" id="classEndTab" onclick="setTimerMode('classEnd')">Time to Class End</button>
+                    <button class="tab-btn" id="packUpTab" onclick="setTimerMode('packUp')">Time to Pack Up</button>
                 </div>
                 
                 <div class="settings-section">
@@ -537,15 +755,17 @@
             <div class="themes-menu" id="themesMenu">
                 <h3>Choose Theme</h3>
                 <button class="theme-option active" data-theme="standard" onclick="setTheme('standard')">Burgundy</button>
-                <button class="theme-option" data-theme="math" onclick="setTheme('math')">Blue</button>
+                <button class="theme-option" data-theme="orange" onclick="setTheme('orange')">Orange</button>
+                <button class="theme-option" data-theme="yellow" onclick="setTheme('yellow')">Yellow</button>
                 <button class="theme-option" data-theme="science" onclick="setTheme('science')">Green</button>
-                <button class="theme-option" data-theme="reading" onclick="setTheme('reading')">Brown</button>
-                <button class="theme-option" data-theme="history" onclick="setTheme('history')">Gold</button>
+                <button class="theme-option" data-theme="math" onclick="setTheme('math')">Blue</button>
+                <button class="theme-option" data-theme="indigo" onclick="setTheme('indigo')">Indigo</button>
+                <button class="theme-option" data-theme="violet" onclick="setTheme('violet')">Violet</button>
             </div>
         </div>
     </div>
 
-    <audio id="alarm"></audio>
+    <audio id="alarm" src="Chime/Chime.mp3" preload="auto"></audio>
 
     <!-- Period Editor Modal -->
     <div id="periodEditorModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; justify-content: center; align-items: center;">
@@ -558,8 +778,7 @@
                 <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importSchedule(event)">
                 <button onclick="resetSchedule()">♻️ Reset to Default</button>
             </div>
-            <button onclick="savePeriodNames()" style="width: 100%; margin-top: 15px; padding: 15px; background: rgba(100, 200, 100, 0.3); border: 2px solid rgba(100, 200, 100, 0.6); border-radius: 10px; color: white; cursor: pointer; font-size: 1.1rem; font-weight: bold;">✔️ Save Changes</button>
-            <button onclick="closePeriodEditor()" style="width: 100%; margin-top: 10px; padding: 12px; background: rgba(200, 100, 100, 0.3); border: 2px solid rgba(200, 100, 100, 0.6); border-radius: 10px; color: white; cursor: pointer; font-size: 1rem;">Cancel</button>
+            <button onclick="closePeriodEditor()" style="width: 100%; margin-top: 15px; padding: 12px; background: rgba(200, 100, 100, 0.3); border: 2px solid rgba(200, 100, 100, 0.6); border-radius: 10px; color: white; cursor: pointer; font-size: 1rem;">Close</button>
         </div>
     </div>
 
@@ -628,10 +847,11 @@
 
         let alarmPlayed = false;
         let audioContext = null;
-        let timerMode = 'packUp'; // 'packUp' or 'classEnd'
+        let timerMode = 'classEnd'; // 'packUp' or 'classEnd'
         let popupWindow = null;
         let isPopupMode = false;
         let currentTheme = localStorage.getItem('timerTheme') || 'standard';
+        let flashingStartTime = null;
 
         // Check if this is a popup window
         if (window.opener && window.location.search.includes('popup=true')) {
@@ -692,39 +912,19 @@
             if (alarmPlayed) return;
             alarmPlayed = true;
 
-            audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            const now = audioContext.currentTime;
-
-            function playTone(frequency, startTime, duration) {
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-
-                oscillator.type = 'sine';
-                oscillator.frequency.setValueAtTime(frequency, startTime);
-
-                gainNode.gain.setValueAtTime(0, startTime);
-                gainNode.gain.linearRampToValueAtTime(0.15, startTime + 0.05);
-                gainNode.gain.linearRampToValueAtTime(0.15, startTime + duration - 0.05);
-                gainNode.gain.linearRampToValueAtTime(0, startTime + duration);
-
-                oscillator.start(startTime);
-                oscillator.stop(startTime + duration);
-            }
-
-            // Pleasant chime
-            const frequencies = [523.25, 659.25, 783.99]; // C5, E5, G5
-            let time = now;
-
-            for (let i = 0; i < frequencies.length; i++) {
-                playTone(frequencies[i], time, 0.3);
-                time += 0.2;
-            }
+            const audio = document.getElementById('alarm');
+            audio.currentTime = 0;
+            audio.play().catch(error => {
+                console.log('Audio playback failed:', error);
+            });
         }
 
         function updateTimer() {
+            // Don't update schedule timer if in custom timer mode
+            if (currentMode === 'custom') {
+                return;
+            }
+            
             const now = new Date();
             const dayOfWeek = now.getDay();
 
@@ -803,11 +1003,26 @@
                         document.getElementById('timerDisplay').className = 'timer-display';
                         document.getElementById('timeLabel').textContent = '⏰ Time Until Pack-Up Begins (2 min before end)';
                         alarmPlayed = false;
+                        flashingStartTime = null;
                     } else {
                         document.getElementById('status').textContent = '🎒 PACK UP NOW!';
-                        document.getElementById('status').className = 'status packing';
+                        
+                        // Start tracking flashing time
+                        if (flashingStartTime === null) {
+                            flashingStartTime = Date.now();
+                        }
+                        
+                        // Stop flashing after 5 seconds
+                        const flashingDuration = Date.now() - flashingStartTime;
+                        if (flashingDuration < 5000) {
+                            document.getElementById('status').className = 'status packing';
+                            document.getElementById('timerDisplay').className = 'timer-display ending';
+                        } else {
+                            document.getElementById('status').className = 'status';
+                            document.getElementById('timerDisplay').className = 'timer-display';
+                        }
+                        
                         document.getElementById('timerDisplay').textContent = formatCountdown(msRemaining);
-                        document.getElementById('timerDisplay').className = 'timer-display ending';
                         document.getElementById('timeLabel').textContent = 'Final 2 Minutes - Class Ends In';
 
                         if (msToPackUp > -1000 && msToPackUp < 0) {
@@ -822,11 +1037,26 @@
                         document.getElementById('timerDisplay').className = 'timer-display';
                         document.getElementById('timeLabel').textContent = '📚 Time Until Class Ends';
                         alarmPlayed = false;
+                        flashingStartTime = null;
                     } else {
                         document.getElementById('status').textContent = '🎒 PACK UP NOW!';
-                        document.getElementById('status').className = 'status packing';
+                        
+                        // Start tracking flashing time
+                        if (flashingStartTime === null) {
+                            flashingStartTime = Date.now();
+                        }
+                        
+                        // Stop flashing after 5 seconds
+                        const flashingDuration = Date.now() - flashingStartTime;
+                        if (flashingDuration < 5000) {
+                            document.getElementById('status').className = 'status packing';
+                            document.getElementById('timerDisplay').className = 'timer-display ending';
+                        } else {
+                            document.getElementById('status').className = 'status';
+                            document.getElementById('timerDisplay').className = 'timer-display';
+                        }
+                        
                         document.getElementById('timerDisplay').textContent = formatCountdown(msRemaining);
-                        document.getElementById('timerDisplay').className = 'timer-display ending';
                         document.getElementById('timeLabel').textContent = 'Final 2 Minutes - Class Ends In';
 
                         if (msToPackUp > -1000 && msToPackUp < 0) {
@@ -957,7 +1187,7 @@
 
         function setTheme(theme) {
             // Remove all theme classes
-            document.body.classList.remove('theme-math', 'theme-science', 'theme-reading', 'theme-history');
+            document.body.classList.remove('theme-math', 'theme-science', 'theme-reading', 'theme-history', 'theme-orange', 'theme-yellow', 'theme-indigo', 'theme-violet');
             
             // Add new theme class if not standard
             if (theme !== 'standard') {
@@ -1008,7 +1238,8 @@
                                    id="period_${index}" 
                                    data-index="${index}"
                                    value="${period.name}" 
-                                   placeholder="Class name">
+                                   placeholder="Class name"
+                                   oninput="autoSavePeriodName(${index})">
                         </div>
                     `;
                     periodNumber++;
@@ -1022,6 +1253,24 @@
 
         function closePeriodEditor() {
             document.getElementById('periodEditorModal').style.display = 'none';
+        }
+
+        function autoSavePeriodName(index) {
+            const input = document.getElementById(`period_${index}`);
+            if (input && !input.disabled) {
+                const newName = input.value;
+                const days = [1, 2, 3, 4, 5];
+                
+                // Apply to all days at this index
+                days.forEach(dayNum => {
+                    if (schedules[dayNum][index]) {
+                        schedules[dayNum][index].name = newName;
+                    }
+                });
+                
+                // Save to localStorage
+                localStorage.setItem('customSchedules', JSON.stringify(schedules));
+            }
         }
 
         function savePeriodNames() {
@@ -1051,6 +1300,29 @@
         }
 
         function exportSchedule() {
+            // Save current changes before exporting
+            const days = [1, 2, 3, 4, 5];
+            const basePeriods = schedules[1];
+            
+            // Get the new names from inputs
+            basePeriods.forEach((period, index) => {
+                const input = document.getElementById(`period_${index}`);
+                if (input && !input.disabled) {
+                    const newName = input.value || period.name;
+                    
+                    // Apply to all days at this index
+                    days.forEach(dayNum => {
+                        if (schedules[dayNum][index]) {
+                            schedules[dayNum][index].name = newName;
+                        }
+                    });
+                }
+            });
+            
+            // Save to localStorage
+            localStorage.setItem('customSchedules', JSON.stringify(schedules));
+            
+            // Export the saved schedule
             const dataStr = JSON.stringify({ schedules }, null, 2);
             const dataBlob = new Blob([dataStr], { type: 'application/json' });
             const url = URL.createObjectURL(dataBlob);
@@ -1144,9 +1416,192 @@
             }
         });
 
+        // Custom Timer Variables
+        let customTimerInterval = null;
+        let customTimerRemaining = 0;
+        let customTimerRunning = false;
+        let currentMode = 'schedule';
+
+        function switchMode(mode) {
+            // Update mode FIRST, before any other operations
+            currentMode = mode;
+            
+            // Close settings and themes menus when switching modes
+            document.getElementById('settingsMenu').classList.remove('show');
+            document.getElementById('themesMenu').classList.remove('show');
+            
+            // If switching to schedule and custom timer is running, pause it
+            if (mode === 'schedule' && customTimerRunning) {
+                clearInterval(customTimerInterval);
+                customTimerRunning = false;
+                showNotification('⏸️ Timer Paused');
+            }
+            
+            // Clear the schedule timer interval if switching to custom mode
+            if (mode === 'custom' && window.scheduleTimerInterval) {
+                clearInterval(window.scheduleTimerInterval);
+                window.scheduleTimerInterval = null;
+            }
+            
+            document.getElementById('scheduleViewTab').classList.remove('active');
+            document.getElementById('timerViewTab').classList.remove('active');
+            
+            if (mode === 'schedule') {
+                document.getElementById('scheduleViewTab').classList.add('active');
+                document.getElementById('scheduleSettings').style.display = 'block';
+                
+                // Show schedule timer elements
+                document.getElementById('currentTime').classList.remove('hidden');
+                document.getElementById('periodName').classList.remove('hidden');
+                document.getElementById('status').classList.remove('hidden');
+                document.getElementById('timeLabel').classList.remove('hidden');
+                document.getElementById('nextPeriod').classList.remove('hidden');
+                document.getElementById('customTimerView').classList.add('hidden');
+                
+                // Resume schedule timer updates and update immediately
+                updateTimer();
+                if (!window.scheduleTimerInterval) {
+                    window.scheduleTimerInterval = setInterval(updateTimer, 1000);
+                }
+            } else {
+                document.getElementById('timerViewTab').classList.add('active');
+                document.getElementById('scheduleSettings').style.display = 'none';
+                
+                // Show custom timer elements
+                document.getElementById('currentTime').classList.add('hidden');
+                document.getElementById('status').classList.add('hidden');
+                document.getElementById('timeLabel').classList.add('hidden');
+                document.getElementById('nextPeriod').classList.add('hidden');
+                document.getElementById('customTimerView').classList.remove('hidden');
+                
+                // Update display and button states
+                if (customTimerRemaining > 0) {
+                    // Timer was paused, show resume button
+                    document.getElementById('periodName').textContent = 'TIMER PAUSED';
+                    document.getElementById('startBtn').classList.add('hidden');
+                    document.getElementById('pauseBtn').classList.add('hidden');
+                    document.getElementById('resumeBtn').classList.remove('hidden');
+                    updateCustomTimerDisplay();
+                } else if (!customTimerRunning) {
+                    document.getElementById('periodName').textContent = 'CUSTOM TIMER';
+                    const h = parseInt(document.getElementById('hoursInput').value) || 0;
+                    const m = parseInt(document.getElementById('minutesInput').value) || 0;
+                    const s = parseInt(document.getElementById('secondsInput').value) || 0;
+                    document.getElementById('timerDisplay').textContent = 
+                        `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+                }
+            }
+        }
+
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        function startCustomTimer() {
+            const hours = parseInt(document.getElementById('hoursInput').value) || 0;
+            const minutes = parseInt(document.getElementById('minutesInput').value) || 0;
+            const seconds = parseInt(document.getElementById('secondsInput').value) || 0;
+            
+            customTimerRemaining = (hours * 3600) + (minutes * 60) + seconds;
+            
+            if (customTimerRemaining <= 0) {
+                alert('Please set a time greater than 0');
+                return;
+            }
+            
+            customTimerRunning = true;
+            document.getElementById('periodName').textContent = 'TIMER RUNNING';
+            document.getElementById('startBtn').classList.add('hidden');
+            document.getElementById('pauseBtn').classList.remove('hidden');
+            document.getElementById('hoursInput').disabled = true;
+            document.getElementById('minutesInput').disabled = true;
+            document.getElementById('secondsInput').disabled = true;
+            
+            customTimerInterval = setInterval(() => {
+                if (customTimerRemaining > 0) {
+                    customTimerRemaining--;
+                    updateCustomTimerDisplay();
+                } else {
+                    finishCustomTimer();
+                }
+            }, 1000);
+        }
+
+        function pauseCustomTimer() {
+            customTimerRunning = false;
+            clearInterval(customTimerInterval);
+            document.getElementById('periodName').textContent = 'TIMER PAUSED';
+            document.getElementById('pauseBtn').classList.add('hidden');
+            document.getElementById('resumeBtn').classList.remove('hidden');
+        }
+
+        function resumeCustomTimer() {
+            customTimerRunning = true;
+            document.getElementById('periodName').textContent = 'TIMER RUNNING';
+            document.getElementById('resumeBtn').classList.add('hidden');
+            document.getElementById('pauseBtn').classList.remove('hidden');
+            
+            customTimerInterval = setInterval(() => {
+                if (customTimerRemaining > 0) {
+                    customTimerRemaining--;
+                    updateCustomTimerDisplay();
+                } else {
+                    finishCustomTimer();
+                }
+            }, 1000);
+        }
+
+        function resetCustomTimer() {
+            customTimerRunning = false;
+            clearInterval(customTimerInterval);
+            customTimerRemaining = 0;
+            
+            document.getElementById('periodName').textContent = 'CUSTOM TIMER';
+            document.getElementById('startBtn').classList.remove('hidden');
+            document.getElementById('pauseBtn').classList.add('hidden');
+            document.getElementById('resumeBtn').classList.add('hidden');
+            document.getElementById('hoursInput').disabled = false;
+            document.getElementById('minutesInput').disabled = false;
+            document.getElementById('secondsInput').disabled = false;
+            document.getElementById('hoursInput').value = 0;
+            document.getElementById('minutesInput').value = 5;
+            document.getElementById('secondsInput').value = 0;
+            document.getElementById('timerDisplay').textContent = '00:05:00';
+        }
+
+        function updateCustomTimerDisplay() {
+            const hours = Math.floor(customTimerRemaining / 3600);
+            const minutes = Math.floor((customTimerRemaining % 3600) / 60);
+            const seconds = customTimerRemaining % 60;
+            
+            document.getElementById('timerDisplay').textContent = 
+                `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        function finishCustomTimer() {
+            clearInterval(customTimerInterval);
+            customTimerRunning = false;
+            document.getElementById('periodName').textContent = 'TIME\'S UP!';
+            document.getElementById('timerDisplay').textContent = '00:00:00';
+            document.getElementById('pauseBtn').classList.add('hidden');
+            document.getElementById('startBtn').classList.remove('hidden');
+            document.getElementById('hoursInput').disabled = false;
+            document.getElementById('minutesInput').disabled = false;
+            document.getElementById('secondsInput').disabled = false;
+            
+            // Play alarm
+            playAlarm();
+        }
+
         // Update timer every second
         updateTimer();
-        setInterval(updateTimer, 1000);
+        window.scheduleTimerInterval = setInterval(updateTimer, 1000);
     </script>
 </body>
 </html>
