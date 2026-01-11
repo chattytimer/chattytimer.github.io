@@ -504,6 +504,14 @@
             background: rgba(100, 150, 255, 0.3);
         }
 
+        .alarm-btn {
+            display: none;
+        }
+
+        .alarm-btn.show {
+            display: inline-block;
+        }
+
         .popup-mode .settings-container {
             display: none;
         }
@@ -1575,6 +1583,7 @@
             if (mode === 'schedule') {
                 document.getElementById('scheduleViewTab').classList.add('active');
                 document.getElementById('scheduleSettings').style.display = 'block';
+                document.querySelector('.alarm-btn').classList.remove('show');
                 
                 // Show schedule timer elements
                 document.getElementById('currentTime').classList.remove('hidden');
@@ -1592,6 +1601,7 @@
             } else {
                 document.getElementById('timerViewTab').classList.add('active');
                 document.getElementById('scheduleSettings').style.display = 'none';
+                document.querySelector('.alarm-btn').classList.add('show');
                 
                 // Show custom timer elements
                 document.getElementById('currentTime').classList.add('hidden');
