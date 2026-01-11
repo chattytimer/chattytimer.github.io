@@ -288,7 +288,8 @@
         }
 
         .settings-btn,
-        .themes-btn {
+        .themes-btn,
+        .alarm-btn {
             padding: 15px 40px;
             font-size: 1.5rem;
             background: rgba(255, 255, 255, 0.2);
@@ -301,7 +302,8 @@
         }
 
         .settings-btn:hover,
-        .themes-btn:hover {
+        .themes-btn:hover,
+        .alarm-btn:hover {
             background: rgba(255, 255, 255, 0.3);
             transform: translateY(-2px);
             box-shadow: 0 5px 20px rgba(255, 255, 255, 0.3);
@@ -324,8 +326,58 @@
         }
 
         .settings-menu.show,
-        .themes-menu.show {
+        .themes-menu.show,
+        .alarm-menu.show {
             display: block;
+        }
+
+        .alarm-menu {
+            display: none;
+            position: absolute;
+            bottom: 70px;
+            right: 250px;
+            background: rgba(20, 20, 40, 0.95);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            min-width: 200px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .alarm-menu h3 {
+            margin: 0 0 15px 0;
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding-bottom: 10px;
+        }
+
+        .alarm-option {
+            display: block;
+            width: 100%;
+            padding: 10px 15px;
+            margin: 5px 0;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .alarm-option:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: white;
+        }
+
+        .alarm-option.active {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: white;
         }
 
         .themes-menu {
@@ -728,6 +780,14 @@
         <div class="settings-container">
             <button class="settings-btn" onclick="toggleSettings()">⚙️ Settings</button>
             <button class="themes-btn" onclick="toggleThemes()">🎨 Themes</button>
+            <button class="alarm-btn" onclick="toggleAlarmMenu()">🔔 Alarm Sound</button>
+            
+            <div class="alarm-menu" id="alarmMenu">
+                <h3>Alarm Sound</h3>
+                <button class="alarm-option active" data-alarm="Classic" onclick="setAlarmSound('Classic')">Classic</button>
+                <button class="alarm-option" data-alarm="Funny" onclick="setAlarmSound('Funny')">Funny</button>
+                <button class="alarm-option" data-alarm="Happy" onclick="setAlarmSound('Happy')">Happy</button>
+            </div>
             
             <div class="settings-menu" id="settingsMenu">
                 <h3>Timer Settings</h3>
@@ -1183,6 +1243,66 @@
             menu.classList.toggle('show');
             // Close settings menu if open
             document.getElementById('settingsMenu').classList.remove('show');
+            // Close alarm menu if open
+            document.getElementById('alarmMenu').classList.remove('show');
+        }
+
+        function toggleAlarmMenu() {
+            const menu = document.getElementById('alarmMenu');
+            menu.classList.toggle('show');
+            // Close settings menu if open
+            document.getElementById('settingsMenu').classList.remove('show');
+            // Close themes menu if open
+            document.getElementById('themesMenu').classList.remove('show');
+        }
+
+        let currentAlarmSound = 'Classic';
+        let previewAudio = null;
+        let previewTimeout = null;
+
+        function setAlarmSound(sound) {
+            // If clicking the same sound that's playing, pause it
+            if (previewAudio && !previewAudio.paused && currentAlarmSound === sound) {
+                previewAudio.pause();
+                return;
+            }
+
+            // Stop any currently playing preview
+            if (previewAudio) {
+                previewAudio.pause();
+                previewAudio.currentTime = 0;
+            }
+            if (previewTimeout) {
+                clearTimeout(previewTimeout);
+            }
+
+            currentAlarmSound = sound;
+            // Update active button
+            document.querySelectorAll('.alarm-option').forEach(btn => {
+                if (btn.dataset.alarm === sound) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            // Play preview for 3 seconds
+            previewAudio = new Audio(`Audios/${sound}.mp3`);
+            previewAudio.play().catch(error => {
+                console.log('Preview playback failed:', error);
+            });
+
+            previewTimeout = setTimeout(() => {
+                if (previewAudio) {
+                    previewAudio.pause();
+                    previewAudio.currentTime = 0;
+                }
+            }, 3000);
+        }
+
+        function playAlarmSound() {
+            const audio = new Audio(`Audios/${currentAlarmSound}.mp3`);
+            audio.play();
         }
 
         function setTheme(theme) {
@@ -1431,9 +1551,10 @@
             // Update mode FIRST, before any other operations
             currentMode = mode;
             
-            // Close settings and themes menus when switching modes
+            // Close settings, themes, and alarm menus when switching modes
             document.getElementById('settingsMenu').classList.remove('show');
             document.getElementById('themesMenu').classList.remove('show');
+            document.getElementById('alarmMenu').classList.remove('show');
             
             // If switching to schedule and custom timer is running, pause it
             if (mode === 'schedule' && customTimerRunning) {
@@ -1600,8 +1721,8 @@
             document.getElementById('minutesInput').disabled = false;
             document.getElementById('secondsInput').disabled = false;
             
-            // Play alarm
-            playAlarm();
+            // Play selected alarm sound
+            playAlarmSound();
         }
 
         // Update timer every second
