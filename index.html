@@ -1619,7 +1619,7 @@
                     document.getElementById('resumeBtn').classList.remove('hidden');
                     updateCustomTimerDisplay();
                 } else if (!customTimerRunning) {
-                    document.getElementById('periodName').textContent = 'CUSTOM TIMER';
+                    document.getElementById('periodName').textContent = 'TIMER';
                     const h = parseInt(document.getElementById('hoursInput').value) || 0;
                     const m = parseInt(document.getElementById('minutesInput').value) || 0;
                     const s = parseInt(document.getElementById('secondsInput').value) || 0;
@@ -1698,7 +1698,7 @@
             clearInterval(customTimerInterval);
             customTimerRemaining = 0;
             
-            document.getElementById('periodName').textContent = 'CUSTOM TIMER';
+            document.getElementById('periodName').textContent = 'TIMER';
             document.getElementById('startBtn').classList.remove('hidden');
             document.getElementById('pauseBtn').classList.add('hidden');
             document.getElementById('resumeBtn').classList.add('hidden');
