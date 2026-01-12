@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignment Tracker - Chatty Utility</title>
+    <link rel="icon" type="image/png" href="../../../Images/Logo.png">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a0a0f 0%, #4a0e1f 100%);
+            color: #f5e6e8;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+        .back-button {
+            display: inline-block;
+            margin-bottom: 1rem;
+            padding: 0.7rem 1.5rem;
+            background: rgba(200, 100, 150, 0.3);
+            color: #ff6b9d;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(200, 100, 150, 0.3);
+        }
+        h1 { text-align: center; margin-bottom: 1.5rem; background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .input-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr auto;
+            gap: 0.8rem;
+            margin-bottom: 2rem;
+        }
+        input, select {
+            padding: 0.8rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(200, 100, 150, 0.4);
+            border-radius: 8px;
+            color: #f5e6e8;
+        }
+        input:focus, select:focus { outline: none; border-color: rgba(200, 100, 150, 0.8); }
+        button {
+            padding: 0.8rem 1.5rem;
+            background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .assignment-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 2rem;
+        }
+        .assignment-table th {
+            background: rgba(200, 100, 150, 0.2);
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 2px solid rgba(200, 100, 150, 0.4);
+        }
+        .assignment-table td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(200, 100, 150, 0.2);
+        }
+        .assignment-table tr:hover { background: rgba(200, 100, 150, 0.1); }
+        .priority-high { color: #ff6b6b; }
+        .priority-medium { color: #ffd93d; }
+        .priority-low { color: #6bcf7f; }
+        .delete-btn {
+            padding: 0.4rem 0.8rem;
+            background: rgba(220, 50, 80, 0.4);
+            font-size: 0.9rem;
+        }
+        @media (max-width: 1000px) {
+            .input-section { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <a href="../../../index.html" class="back-button">← Back to Home</a>
+    <div class="container">
+        <h1>📋 Assignment Tracker</h1>
+        
+        <div class="input-section">
+            <input type="text" id="assignmentName" placeholder="Assignment name">
+            <input type="text" id="className" placeholder="Class">
+            <input type="date" id="dueDate">
+            <select id="priority">
+                <option value="low">Low Priority</option>
+                <option value="medium" selected>Medium Priority</option>
+                <option value="high">High Priority</option>
+            </select>
+            <button onclick="addAssignment()">Add</button>
+        </div>
+
+        <table class="assignment-table">
+            <thead>
+                <tr>
+                    <th>Assignment</th>
+                    <th>Class</th>
+                    <th>Due Date</th>
+                    <th>Priority</th>
+                    <th>Days Left</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="assignmentList"></tbody>
+        </table>
+    </div>
+
+    <script>
+        let assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+
+        function addAssignment() {
+            const name = document.getElementById('assignmentName').value;
+            const className = document.getElementById('className').value;
+            const dueDate = document.getElementById('dueDate').value;
+            const priority = document.getElementById('priority').value;
+
+            if (!name || !className || !dueDate) return;
+
+            assignments.push({ id: Date.now(), name, className, dueDate, priority });
+            assignments.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+            
+            document.getElementById('assignmentName').value = '';
+            document.getElementById('className').value = '';
+            document.getElementById('dueDate').value = '';
+            
+            saveAndRender();
+        }
+
+        function deleteAssignment(id) {
+            assignments = assignments.filter(a => a.id !== id);
+            saveAndRender();
+        }
+
+        function getDaysLeft(dueDate) {
+            const today = new Date();
+            const due = new Date(dueDate);
+            const diff = due - today;
+            const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+            return days;
+        }
+
+        function saveAndRender() {
+            localStorage.setItem('assignments', JSON.stringify(assignments));
+            const tbody = document.getElementById('assignmentList');
+            tbody.innerHTML = assignments.map(a => {
+                const daysLeft = getDaysLeft(a.dueDate);
+                const daysClass = daysLeft < 0 ? 'priority-high' : daysLeft < 3 ? 'priority-medium' : 'priority-low';
+                return `<tr>
+                    <td>${a.name}</td>
+                    <td>${a.className}</td>
+                    <td>${new Date(a.dueDate).toLocaleDateString()}</td>
+                    <td class="priority-${a.priority}">${a.priority.charAt(0).toUpperCase() + a.priority.slice(1)}</td>
+                    <td class="${daysClass}">${daysLeft < 0 ? 'OVERDUE' : daysLeft + ' days'}</td>
+                    <td><button class="delete-btn" onclick="deleteAssignment(${a.id})">Delete</button></td>
+                </tr>`;
+            }).join('');
+        }
+
+        saveAndRender();
+    </script>
+</body>
+</html>
