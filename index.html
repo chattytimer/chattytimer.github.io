@@ -1054,8 +1054,12 @@
                         if (currentTime >= prevEndTime) {
                             inPassing = true;
                         }
-                    } else if (currentTime < startTime) {
-                        inPassing = true;
+                    } else if (i === 0) {
+                        // Before school: only show passing period if within 5 minutes of start
+                        const fiveMinBefore = startTime - (5 * 60 * 1000);
+                        if (currentTime >= fiveMinBefore) {
+                            inPassing = true;
+                        }
                     }
                     break;
                 }
